@@ -23,14 +23,14 @@ server:
 # 推荐搭配 Muse Monitor 使用
 # 并开启 OSC stream
 # 同时眨眼和咬牙齿可以实现唤醒
-muse:
+muse:        # todo 产品 脑机设备
     enable: false
     ip: '0.0.0.0'  # 请修改为本机的 ip 地址
     port: 5001     # 请修改为 OSC 的端口号
 
 # 是否展示灯光效果
 # 支持 Respeaker 2 Mics 和 Google AIY Voice Kit 两种
-# 必须具备相应的硬件和驱动
+# 必须具备相应的硬件和驱动    # todo 产品 麦克风设备
 LED:
     enable: false
     type: aiy  # aiy: Google AIY Voice Kit; respeaker：respeaker 2Mics
@@ -127,7 +127,7 @@ tencent_yuyin:
     voiceType: 0            # 0: 女声1；1：男生1；2：男生2
     language: 1             # 1: 中文；2：英文
 
-# HanTTS 服务
+# HanTTS 服务    # todo 汉语text-speech
 han-tts:
     # 所使用的语音库目录
     # 需放在 ~/.wukong/ 目录下
@@ -135,7 +135,7 @@ han-tts:
     # https://github.com/junzew/HanTTS
     voice: 'syllables' 
 
-# NLU 引擎
+# NLU 引擎   自然语言引擎
 # 可选值：
 # unit      - 百度 UNIT
 nlu_engine: unit

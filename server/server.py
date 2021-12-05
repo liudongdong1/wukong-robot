@@ -48,12 +48,13 @@ class BaseHandler(tornado.web.RequestHandler):
 class MainHandler(BaseHandler):
 
     def get(self):
-        global conversation, wukong, suggestions
+        global conversation, wukong, suggestions    # todo 这三个对象是干嘛的
+        # 是否登录判断
         if not self.isValidated():
             self.redirect("/login")
             return
         if conversation:
-            info = Updater.fetch(wukong._dev)
+            info = Updater.fetch(wukong._dev)           #todo 这个代码作用
             suggestion = random.choice(suggestions)
             notices = None
             if 'notices' in info:
@@ -63,9 +64,9 @@ class MainHandler(BaseHandler):
             self.render('index.html')
 
 class MessageUpdatesHandler(BaseHandler):
-    """Long-polling request for new messages.
-
-    Waits until new messages are available before returning anything.
+    """
+        Long-polling request for new messages.
+        Waits until new messages are available before returning anything.
     """
 
     async def post(self):
@@ -74,7 +75,7 @@ class MessageUpdatesHandler(BaseHandler):
             self.write(json.dumps(res))
         else:
             cursor = self.get_argument("cursor", None)
-            messages = conversation.getHistory().get_messages_since(cursor)
+            messages = conversation.getHistory().get_messages_since(cursor)       #todo 这个作用是什么
             while not messages:
                 # Save the Future returned here so we can cancel it in
                 # on_connection_close.
@@ -93,7 +94,10 @@ class MessageUpdatesHandler(BaseHandler):
         self.wait_future.cancel()
 
 class ChatHandler(BaseHandler):
-
+    '''
+        聊天处理函数：
+        post： 通过获取“query” 或者“voice”所对应内容，通过conversation.doResponse或者conversion.doConverse()获取相应结果
+    '''
     def onResp(self, msg, audio, plugin):
         logger.debug('response msg: {}'.format(msg))
         res = {'code': 0, 'message': 'ok', 'resp': msg, 'audio': audio, 'plugin': plugin}
@@ -109,7 +113,7 @@ class ChatHandler(BaseHandler):
                     res = {'code': 1, 'message': 'query text is empty'}
                     self.write(json.dumps(res))
                 else:
-                    conversation.doResponse(query, uuid, onSay=lambda msg, audio, plugin: self.onResp(msg, audio, plugin))
+                    conversation.doResponse(query, uuid, onSay=lambda msg, audio, plugin: self.onResp(msg, audio, plugin))    #todo 去了解这个代码的含义，conversation的工作
             elif self.get_argument('type') == 'voice':
                 voice_data = self.get_argument('voice')
                 tmpfile = utils.write_temp_file(base64.b64decode(voice_data), '.wav')
@@ -131,7 +135,9 @@ class ChatHandler(BaseHandler):
         
         
 class GetHistoryHandler(BaseHandler):
-
+    '''
+        获取历史信息，通过conversation.getHistory().cache来获取
+    '''
     def get(self):
         global conversation
         if not self.validate(self.get_argument('validate', default=None)):
@@ -144,7 +150,9 @@ class GetHistoryHandler(BaseHandler):
 
 
 class GetConfigHandler(BaseHandler):
-
+    '''
+        获取config具体，通过self.get_argument("key", default="")来获取
+    '''
     def get(self):
         if not self.validate(self.get_argument('validate', default=None)):
             res = {'code': 1, 'message': 'illegal visit'}
@@ -161,20 +169,24 @@ class GetConfigHandler(BaseHandler):
 
 
 class GetLogHandler(BaseHandler):
-
+    '''
+        获取log日志，并进行self.write(json.dumps(res))操作
+    '''
     def get(self):
         if not self.validate(self.get_argument('validate', default=None)):
             res = {'code': 1, 'message': 'illegal visit'}
             self.write(json.dumps(res))
         else:
-            lines = self.get_argument('lines', default=200)
+            lines = self.get_argument('lines', default=200)                    #todo 这里获取的是哪的内容
             res = {'code': 0, 'message': 'ok', 'log': logging.readLog(lines)}
             self.write(json.dumps(res))
         self.finish()
 
 
 class LogHandler(BaseHandler):
-
+    '''
+        用于渲染log日志处理
+    '''
     def get(self):
         if not self.isValidated():
             self.redirect("/login")
@@ -183,7 +195,9 @@ class LogHandler(BaseHandler):
 
 
 class OperateHandler(BaseHandler):
-
+    '''
+        重启悟空系统操作
+    '''
     def post(self):
         global wukong
         if self.validate(self.get_argument('validate', default=None)):
@@ -203,7 +217,9 @@ class OperateHandler(BaseHandler):
             self.finish()
 
 class ConfigHandler(BaseHandler):
-
+    '''
+        解析config文件
+    '''
     def get(self):
         if not self.isValidated():
             self.redirect("/login")
@@ -228,7 +244,9 @@ class ConfigHandler(BaseHandler):
 
 
 class DonateHandler(BaseHandler):
-
+    ''' 
+        捐赠页面
+    '''
     def get(self):
         if not self.isValidated():
             self.redirect("/login")
@@ -245,7 +263,10 @@ class DonateHandler(BaseHandler):
 
 
 class QAHandler(BaseHandler):
-    
+    ''' 
+        get()操作： 将以文件形式保存的结果渲染到qa.html 文件中
+        post（）操作：通过solr_tools 操作将”qa" 对应的值存到指定目录下面
+    '''
     def get(self):
         if not self.isValidated():
             self.redirect("/login")
@@ -265,7 +286,7 @@ class QAHandler(BaseHandler):
                                            'collection1',
                                            config.get('/anyq/solr_port', '8900')
                 )
-                solr_tools.upload_documents(config.get('/anyq/host', '0.0.0.0'),
+                solr_tools.upload_documents(config.get('/anyq/host', '0.0.0.0'),              #todo 这个代码作用
                                             'collection1',
                                             config.get('/anyq/solr_port', '8900'),
                                             qaJson,
@@ -286,7 +307,9 @@ class QAHandler(BaseHandler):
 
 
 class APIHandler(BaseHandler):
-    
+    ''' 
+        显示API 内容，具体内容是api.md文件
+    '''
     def get(self):
         if not self.isValidated():
             self.redirect("/login")
@@ -304,14 +327,16 @@ class APIHandler(BaseHandler):
 
 
 class UpdateHandler(BaseHandler):
-    
+    '''
+        升级悟空系统，通过wukong.update()进行处理
+    '''
     def post(self):
-        global wukong
+        global wukong   
         if self.validate(self.get_argument('validate', default=None)):
             if wukong.update():
                 res = {'code': 0, 'message': 'ok'}
-                self.write(json.dumps(res))
-                self.finish()
+                self.write(json.dumps(res))                 #todo self.write() 数据写到哪里了？
+                self.finish()                               #todo self.finish() 操作含义
                 time.sleep(3)
                 wukong.restart()
             else:
@@ -324,7 +349,9 @@ class UpdateHandler(BaseHandler):
     
         
 class LoginHandler(BaseHandler):
-    
+    '''
+        html 表单登录操作
+    '''
     def get(self):
         if self.isValidated():
             self.redirect('/')
@@ -343,13 +370,15 @@ class LoginHandler(BaseHandler):
 
 
 class LogoutHandler(BaseHandler):
-    
+    '''
+        退出登录操作
+    '''
     def get(self):
         if self.isValidated():
             self.set_secure_cookie("validation", '')
         self.redirect("/login")
 
-
+# 全局变量
 settings = {
     "cookie_secret": config.get('/server/cookie_secret', "__GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__"),
     "template_path": os.path.join(constants.APP_PATH, "server/templates"),
@@ -357,7 +386,7 @@ settings = {
     "login_url": "/login",
     "debug": False
 }
-
+#application 对象，路由设置
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/login", LoginHandler),

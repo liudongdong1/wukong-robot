@@ -34,28 +34,28 @@ class Wukong(object):
         self._thinking = False
         self._interrupted = False        
         print('''
-********************************************************
-*          wukong-robot - 中文语音对话机器人           *
-*          (c) 2019 潘伟洲 <m@hahack.com>              *
-*     https://github.com/wzpan/wukong-robot.git        *
-********************************************************
+            ********************************************************
+            *          wukong-robot - 中文语音对话机器人           *
+            *          (c) 2019 潘伟洲 <m@hahack.com>              *
+            *     https://github.com/wzpan/wukong-robot.git        *
+            ********************************************************
 
-            后台管理端：http://{}:{}
-            如需退出，可以按 Ctrl-4 组合键
+                        后台管理端：http://{}:{}
+                        如需退出，可以按 Ctrl-4 组合键
 
-'''.format(config.get('/server/host', '0.0.0.0'), config.get('/server/port', '5000')))
+            '''.format(config.get('/server/host', '0.0.0.0'), config.get('/server/port', '5000')))
         config.init()
-        self._conversation = Conversation(self._profiling)
+        self._conversation = Conversation(self._profiling)             #todo 这个Conversation 类作用是什么
         self._conversation.say('{} 你好！试试对我喊唤醒词叫醒我吧'.format(config.get('first_name', '主人')), True)
-        self._observer = Observer()
-        event_handler = ConfigMonitor(self._conversation)
+        self._observer = Observer()   #todo Observer 类作用是什么
+        event_handler = ConfigMonitor(self._conversation)             #todo ConfigMonitor 类作用是什么，调度什么
         self._observer.schedule(event_handler, constants.CONFIG_PATH, False)
         self._observer.schedule(event_handler, constants.DATA_PATH, False)
         self._observer.start()
-        if config.get('/LED/enable', False) and config.get('/LED/type') == 'aiy':
-            thread.start_new_thread(self._init_aiy_button_event, ())
+        if config.get('/LED/enable', False) and config.get('/LED/type') == 'aiy':    #doto config.get 作用是什么
+            thread.start_new_thread(self._init_aiy_button_event, ())        #todo _init_aiy_button_event 作用
         if config.get('/muse/enable', False):
-            self._wakeup = multiprocessing.Event()
+            self._wakeup = multiprocessing.Event()                    #todo _wakeup 作用是什么， BCI.MuseBCI作用
             self.bci = BCI.MuseBCI(self._wakeup)
             self.bci.start()
             thread.start_new_thread(self._loop_event, ())
@@ -121,7 +121,7 @@ class Wukong(object):
         signal.signal(signal.SIGINT, self._signal_handler)
 
         # site
-        server.run(self._conversation, self)
+        server.run(self._conversation, self)     #  这里启动服务器后台程序，通过ip 进行相应的handler处理
 
         statistic.report(0)
 
@@ -163,18 +163,18 @@ class Wukong(object):
 
     def help(self):
         print("""=====================================================================================
-    python3 wukong.py [命令]
-    可选命令：
-      md5                      - 用于计算字符串的 md5 值，常用于密码设置
-      update                   - 手动更新 wukong-robot
-      upload [thredNum]        - 手动上传 QA 集语料，重建 solr 索引。
-                                 threadNum 表示上传时开启的线程数（可选。默认值为 10）
-      profiling                - 运行过程中打印耗时数据
-      train <w1> <w2> <w3> <m> - 传入三个wav文件，生成snowboy的.pmdl模型
-                                 w1, w2, w3 表示三个1~3秒的唤醒词录音
-                                 m 表示snowboy的.pmdl模型
-    如需更多帮助，请访问：https://wukong.hahack.com/#/run
-=====================================================================================""")
+                python3 wukong.py [命令]
+                可选命令：
+                md5                      - 用于计算字符串的 md5 值，常用于密码设置
+                update                   - 手动更新 wukong-robot
+                upload [thredNum]        - 手动上传 QA 集语料，重建 solr 索引。
+                                            threadNum 表示上传时开启的线程数（可选。默认值为 10）
+                profiling                - 运行过程中打印耗时数据
+                train <w1> <w2> <w3> <m> - 传入三个wav文件，生成snowboy的.pmdl模型
+                                            w1, w2, w3 表示三个1~3秒的唤醒词录音
+                                            m 表示snowboy的.pmdl模型
+                如需更多帮助，请访问：https://wukong.hahack.com/#/run
+            =====================================================================================""")
 
     def md5(self, password):
         """
