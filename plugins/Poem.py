@@ -15,7 +15,7 @@ class Plugin(AbstractPlugin):
 
     def handle(self, text, parsed):
         try:
-            responds = self.nlu.getSay(parsed, INTENT)
+            responds = self.nlu.getSay(parsed, INTENT)   #todo 需要了解 self.nlu 工具作用
             self.say(responds, cache=True)
         except Exception as e:
             logger.error(e)

@@ -149,7 +149,9 @@ class Plugin(AbstractPlugin):
 
         return msgs
     
-
+    '''
+        邮件查看指令，查看哪些未读邮件，邮件来自谁
+    '''
     def handle(self, text, parsed):
         msgs = self.fetchUnreadEmails(limit=5)
 

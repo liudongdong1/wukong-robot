@@ -42,12 +42,12 @@ class Conversation(object):
     def reInit(self):
         """ 重新初始化 """
         try:
-            self.asr = ASR.get_engine_by_slug(config.get('asr_engine', 'tencent-asr'))
-            self.ai = AI.get_robot_by_slug(config.get('robot', 'tuling'))
-            self.tts = TTS.get_engine_by_slug(config.get('tts_engine', 'baidu-tts'))
-            self.nlu = NLU.get_engine_by_slug(config.get('nlu_engine', 'unit'))
+            self.asr = ASR.get_engine_by_slug(config.get('asr_engine', 'tencent-asr'))   #todo 了解asr 插件
+            self.ai = AI.get_robot_by_slug(config.get('robot', 'tuling'))           #todo 了解AI 插件
+            self.tts = TTS.get_engine_by_slug(config.get('tts_engine', 'baidu-tts'))  #todo 了解tts 插件
+            self.nlu = NLU.get_engine_by_slug(config.get('nlu_engine', 'unit'))    #todo 了解nlu 插件
             self.player = None
-            self.brain = Brain(self)
+            self.brain = Brain(self)                #todo 了解Brain 插件
             self.brain.printPlugins()
         except Exception as e:
             logger.critical("对话初始化失败：{}".format(e))
@@ -57,6 +57,9 @@ class Conversation(object):
             self.brain.restore()
 
     def doResponse(self, query, UUID='', onSay=None):
+        '''
+            回复机器人处理逻辑
+        '''
         statistic.report(1)
         self.interrupt()
         self.appendHistory(0, query, UUID)
@@ -91,7 +94,7 @@ class Conversation(object):
             LED.off()
 
     def doParse(self, query, **args):
-        return self.nlu.parse(query, **args)
+        return self.nlu.parse(query, **args)             #使用NLU 工具进行解析
 
     def setImmersiveMode(self, slug):
         self.immersiveMode = slug

@@ -18,7 +18,7 @@ class Plugin(AbstractPlugin):
             slots = self.nlu.getSlots(parsed, 'CHANGE_VOL')
             for slot in slots:
                 if slot['name'] == 'user_d':
-                    word = self.nlu.getSlotWords(parsed, 'CHANGE_VOL', 'user_d')[0]
+                    word = self.nlu.getSlotWords(parsed, 'CHANGE_VOL', 'user_d')[0]           #  todo 这句代码含义
                     if word == '--HIGHER--':
                         self.player.turnUp()
                         self.say('好的', cache=True)

@@ -13,7 +13,7 @@ class Plugin(AbstractPlugin):
         self.silent_count = 0
 
     def handle(self, text, parsed):
-        if any (word in text for word in ['开启', '激活', '开始', '进入', '打开']):
+        if any (word in text for word in ['开启', '激活', '开始', '进入', '打开']):               #todo 极客模式作用是什么
             self.silent_count = 0
             self.say('进入极客模式', cache=True, onCompleted=lambda: self.onAsk(self.activeListen(silent=True)))
         else:

@@ -8,7 +8,9 @@ from robot.sdk.AbstractPlugin import AbstractPlugin
 logger = logging.getLogger(__name__)
 
 class Plugin(AbstractPlugin):
-
+    '''
+        传话操作
+    '''
     def handle(self, text, parsed):
         text = text.lower().replace('echo', '').replace(u'传话', '')
         self.say(text, cache=False)

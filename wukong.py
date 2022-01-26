@@ -142,7 +142,7 @@ class Wukong(object):
             ]
         else:
             models = constants.getHotwordModel(config.get('hotword', 'wukong.pmdl'))
-        self.detector = snowboydecoder.HotwordDetector(models, sensitivity=config.get('sensitivity', 0.5))
+        self.detector = snowboydecoder.HotwordDetector(models, sensitivity=config.get('sensitivity', 0.5))   # self.detctor 是snowbody 库
         # main loop
         try:
             if config.get('/do_not_bother/hotword_switch', False):
@@ -157,7 +157,7 @@ class Wukong(object):
                                 silent_count_threshold=config.get('silent_threshold', 15),
                                 recording_timeout=config.get('recording_timeout', 5) * 4,
                                 sleep_time=0.03)
-            self.detector.terminate()
+            self.detector.terminate()   # Terminate audio stream. Users can call start() again to detect.
         except Exception as e:
             logger.critical('离线唤醒机制初始化失败：{}'.format(e))
 

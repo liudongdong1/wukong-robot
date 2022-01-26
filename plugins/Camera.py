@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 class Plugin(AbstractPlugin):
 
     SLUG = "camera"
-
+    '''
+        通过摄像头操作，并且通过text解析相关设置，支持树莓派，电脑，usb摄像头
+    '''
     def handle(self, text, parsed):
         quality = config.get('/camera/quality', 100)
         count_down = config.get('/camera/count_down', 3)

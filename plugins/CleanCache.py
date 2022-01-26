@@ -7,7 +7,9 @@ from robot.sdk.AbstractPlugin import AbstractPlugin
 class Plugin(AbstractPlugin):
 
     SLUG = 'cleancache'
-
+    '''
+        清空缓存命令
+    '''
     def handle(self, text, parsed):
         temp = constants.TEMP_PATH
         for f in os.listdir(temp):
